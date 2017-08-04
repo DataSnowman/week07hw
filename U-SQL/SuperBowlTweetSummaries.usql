@@ -1,0 +1,51 @@
+@t = EXTRACT 
+          id string
+         , text string
+         , createdAt string
+         , favorited string
+         , retweeted string
+         , timestampMs string
+         , lang string
+         , userId string
+         , userLocation string
+         , friendsCount string
+         , screenName string
+         , name string
+         , timeZone string
+         , favoritesCount string
+         , retweetCount string
+  FROM "/output/<firstName>/superbowl50/superbowl50smallout.tsv"
+USING Extractors.Tsv(silent:true);
+
+@res1 =
+	SELECT lang, 
+		   COUNT( * ) AS [tweet count]
+	FROM @t
+	GROUP BY lang;
+
+OUTPUT @res1
+TO "/output/<firstName>/superbowl50/superbowl50tweetsBYlangsmallOut.tsv"
+ORDER BY [tweet count] DESC
+USING Outputters.Tsv();
+
+@res2 =
+	SELECT userLocation, 
+		   COUNT( * ) AS [tweet count]
+	FROM @t
+	GROUP BY userLocation;
+
+OUTPUT @res2
+TO "/output/<firstName>/superbowl50/superbowl50tweetsBYuserLocationsmallOut.tsv"
+ORDER BY [tweet count] DESC
+USING Outputters.Tsv();
+
+@res3 =
+	SELECT timeZone, 
+		   COUNT( * ) AS [tweet count]
+	FROM @t
+	GROUP BY timeZone;
+
+OUTPUT @res3
+TO "/output/<firstName>/superbowl50/superbowl50tweetsBYtimeZonesmallOut.tsv"
+ORDER BY [tweet count] DESC
+USING Outputters.Tsv();

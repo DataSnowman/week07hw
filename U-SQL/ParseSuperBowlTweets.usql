@@ -1,0 +1,36 @@
+REFERENCE ASSEMBLY [Newtonsoft.Json];
+REFERENCE ASSEMBLY [TwitterProcessor];
+
+@input =
+	EXTRACT JsonString string
+	FROM @"/superbowl50small/superbowl50small.txt"
+	USING Extractors.Text(rowDelimiter: "\n", encoding: Encoding.UTF8, delimiter: '\b', quoting: false);
+
+
+@jsonExtracted =
+	PROCESS @input
+	PRODUCE id_string string, 
+			tweet string,
+			created_at string,
+			favorited string,
+			retweeted string,
+			timestampMs string,
+			lang string,
+			user_id string,
+			user_location string,
+			friends_count string,
+			screen_name string,
+			name string,
+			time_zone string,
+			favorites_count string,
+			retweet_count string
+	USING new TwitterProcessor.TwitterJsonProcessor();
+
+@processed =
+	SELECT *
+	FROM @jsonExtracted
+	WHERE !String.IsNullOrWhiteSpace(created_at) AND !String.IsNullOrWhiteSpace(tweet);
+
+OUTPUT @processed
+TO "/output/<firstName>/superbowl50/superbowl50smallout.tsv"
+USING Outputters.Tsv(Encoding.UTF8);

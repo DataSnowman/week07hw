@@ -1,0 +1,31 @@
+@t = EXTRACT 
+          id string
+         , text string
+         , createdAt string
+         , favorited string
+         , retweeted string
+         , timestampMs string
+         , lang string
+         , userId string
+         , userLocation string
+         , friendsCount string
+         , screenName string
+         , name string
+         , timeZone string
+         , favoritesCount string
+         , retweetCount string
+  FROM "/output/<firstName>/superbowl50/superbowl50smallout.tsv"
+USING Extractors.Tsv(silent:true);
+
+@res =
+	SELECT  id
+			, screenName
+			, text
+			, lang
+			, userLocation
+			, timeZone
+	FROM @t;
+
+OUTPUT @res
+TO "/output/<firstName>/superbowl50/superbowl50detailtweetssmallout.tsv"
+USING Outputters.Tsv();
